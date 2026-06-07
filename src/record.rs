@@ -2,14 +2,27 @@ use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::hash::{Hash, Hasher};
 use rustc_hash::FxHasher;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Value {
     None,
     String(String),
     Integer(i64),
     Float(f64),
     Bool(bool),
+}
+
+impl Value {
+    pub fn get_default(kind: ValueType) -> Value {
+        match kind {
+            ValueType::String => Value::String(String::default()),
+            ValueType::Integer => Value::Integer(i64::default()),
+            ValueType::Float => Value::Float(f64::default()),
+            ValueType::Bool => Value::Bool(bool::default()),
+            _ => Value::None,
+        }
+    }
 }
 
 impl Hash for Value {
@@ -50,7 +63,7 @@ impl Display for Value {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum ValueType {
     None,
     String,
@@ -59,7 +72,7 @@ pub enum ValueType {
     Bool,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Field {
     pub name: String,
     pub value: Value,
@@ -94,7 +107,7 @@ impl PrimaryKey {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Record {
     pub primary_key: HashMap<String, Field>,
     pub values: HashMap<String, Field>,
